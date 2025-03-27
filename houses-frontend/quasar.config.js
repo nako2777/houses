@@ -89,6 +89,12 @@ export default defineConfig((ctx) => {
           changeOrigin: true,
           secure: false,
           rewrite: path => path.replace(/^\/itandi/, '')
+        },
+        '/api': {
+          target: 'https://api.itandibb.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: path => path.replace(/^\/api/, '')
         }
       }
     },

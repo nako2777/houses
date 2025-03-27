@@ -7,31 +7,31 @@
     <q-page-container>
       <router-view />
       <div>
-        <p>Account: {{ store.account }}</p>
-        <p>Password: {{ store.password }}</p>
+        <!-- <p>Account: {{ store.account }}</p>
+        <p>Password: {{ store.password }}</p> -->
       </div>
     </q-page-container>
   </q-layout>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import Header from 'src/components/Header.vue';
-import { useStore } from '../store'
-import { fetchAuthToken, login } from 'src/utils/authTokenFetcher'
+<script>
+import { fetchSessionCookie, fetchTokenFromLocation, loginWithToken } from '../utils/authTokenFetcher';
 
-const store = useStore()
-
-onMounted(async () => {
-  try {
-    const token = await fetchAuthToken();
-    console.log('Fetched authenticity token:', token);
-    const loginResponse = await login(store.account, store.password, token);
-    console.log('Login response:', loginResponse);
-  } catch (error) {
-    console.error('Failed to fetch authenticity token or log in:', error);
+export default {
+  name: 'Main',
+  async mounted() {
+    try {
+      const { _cloud_chintai_base_session, location } = await fetchSessionCookie();
+      // const token = await fetchTokenFromLocation(location);
+      const email = 'your-email@example.com'; // Replace with actual email
+      const password = 'your-password'; // Replace with actual password
+      // const loginResponse = await loginWithToken(email, password, token);
+      console.log('Login response:', loginResponse);
+    } catch (error) {
+      console.error('Error in authentication process:', error);
+    }
   }
-});
+};
 </script>
 
 <style scoped>
