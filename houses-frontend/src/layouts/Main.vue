@@ -15,18 +15,20 @@
 </template>
 
 <script>
-import { fetchSessionCookie, fetchTokenFromLocation, loginWithToken } from '../utils/authTokenFetcher';
+import { fetchSessionCookie, fetchTokenFromLocation, loginWithToken, fetchCsrfToken } from '../utils/authTokenFetcher';
 
 export default {
   name: 'Main',
   async mounted() {
     try {
-      const { _cloud_chintai_base_session, location } = await fetchSessionCookie();
-      // const token = await fetchTokenFromLocation(location);
-      const email = 'your-email@example.com'; // Replace with actual email
-      const password = 'your-password'; // Replace with actual password
-      // const loginResponse = await loginWithToken(email, password, token);
-      console.log('Login response:', loginResponse);
+      const { location } = await fetchSessionCookie();
+      const token = await fetchTokenFromLocation(location);
+      const email = 'info@aspiration-jpestate.com'; // Replace with actual email
+      const password = 'asp111673'; // Replace with actual password
+      const takeCsrfTokenLocation = await loginWithToken(email, password, token);
+      console.log(takeCsrfTokenLocation)
+      const csrfToken = await fetchCsrfToken(takeCsrfTokenLocation);
+      console.log('Fetched CSRF token:', csrfToken);
     } catch (error) {
       console.error('Error in authentication process:', error);
     }
