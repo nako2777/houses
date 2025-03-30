@@ -15,22 +15,20 @@
 </template>
 
 <script>
-import { fetchSessionCookie, fetchTokenFromLocation, loginWithToken, fetchCsrfToken } from '../utils/authTokenFetcher';
+import Itandibb from '../class/itandibb';
+import { useStore } from '../store';
 
 export default {
   name: 'Main',
   async mounted() {
+    const store = useStore();
+    const itandibb = new Itandibb();
     try {
-      const { location } = await fetchSessionCookie();
-      const token = await fetchTokenFromLocation(location);
-      const email = 'info@aspiration-jpestate.com'; // Replace with actual email
-      const password = 'asp111673'; // Replace with actual password
-      const takeCsrfTokenLocation = await loginWithToken(email, password, token);
-      console.log(takeCsrfTokenLocation)
-      const csrfToken = await fetchCsrfToken(takeCsrfTokenLocation);
-      console.log('Fetched CSRF token:', csrfToken);
+      await itandibb.init();
+      store.setItandibbInstance(itandibb);
+      console.log('Itandibb instance stored in Pinia:', itandibb);
     } catch (error) {
-      console.error('Error in authentication process:', error);
+      console.error('Error initializing Itandibb in Main.vue:', error);
     }
   }
 };
