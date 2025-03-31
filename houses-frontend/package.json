@@ -16,6 +16,7 @@
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "cheerio": "^1.0.0",
+    "houses-frontend": "file:",
     "jsdom": "^26.0.0",
     "pinia": "^3.0.1",
     "quasar": "^2.16.0",
