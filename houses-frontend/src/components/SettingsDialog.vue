@@ -6,6 +6,7 @@
             </q-card-section>
 
             <q-card-section>
+                <q-p>itandibb</q-p>
                 <q-input v-model="account" label="Account" class="cute-input" />
                 <q-input v-model="password" label="Password" type="password" class="cute-input" />
             </q-card-section>
@@ -24,6 +25,8 @@ import { useStore } from '../store'
 
 const visible = ref(false)
 const store = useStore()
+// TODO:
+// 优化account和password的命名，应该每个网站在store中创建一个对象分别保存account和password
 const account = ref(store.account)
 const password = ref(store.password)
 

@@ -13,12 +13,13 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
-    "axios": "^1.2.1",
-    "vue-i18n": "^11.0.0",
-    "pinia": "^3.0.1",
     "@quasar/extras": "^1.16.4",
+    "axios": "^1.2.1",
+    "housesearch": "file:",
+    "pinia": "^3.0.1",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
+    "vue-i18n": "^11.0.0",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
