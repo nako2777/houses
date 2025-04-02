@@ -1,5 +1,6 @@
 import axios from "axios";
 import { authenticateUser } from "../services/authService";
+import staionsMap from "../data/itandibb/stationsMap";
 import { useStore } from "../store";
 //labelToId is a object
 import labelToId from "../data/itandibb/label_to_id";
@@ -32,6 +33,28 @@ export default class Itandibb {
     // this.getHouses()
   }
 
+
+  async search(line,stations){
+    const stationsCode = this.getStationsCode(line,stations)
+    const conditions = {}
+    conditions.stationsCode = stationsCode
+    await this.getHouses(conditions)
+  }
+
+  getStationsCode(line,stations){
+    const tmp = []
+    for(const station of stations){
+      const stationCode = staionsMap[line].stations[station]
+      if(stationCode){
+        tmp.push(stationCode)
+      }else{
+        console.error("Station code not found for: ", station)
+      }
+    }
+
+    return tmp;
+  }
+
   async getStations(lineCode) {
     try {
       const response = await this.api.get(
@@ -51,9 +74,9 @@ export default class Itandibb {
         import.meta.env.VITE_ITTANDIBB_HOUSES_SEARCH_API,
         {
           filter: {
-            "station_id:in": [23266, 23267, 23268],
-            "rent:gteq": 60000,
-            "rent:lteq": 100000,
+            "station_id:in": conditions.stationsCode,
+            // "rent:gteq": 60000,
+            // "rent:lteq": 100000,
           },
           sort: [{ last_status_opened_at: "desc" }],
           page: { page: 1, limit: 20 },

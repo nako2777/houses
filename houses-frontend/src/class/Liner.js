@@ -11,4 +11,8 @@ export default class {
     getLines(){
         return this.lines;
     }
+
+    getStations(line){
+        return all_stations[line];
+    }
 }
