@@ -22,15 +22,21 @@
           use-input
           :options="filteredLines"
           outlined
-          v-model="lineName"
+          hide-selected
+          fill-input
+          v-model="line"
           @filter="filterFnLines"
+          @input-value="setline"
+          @blur="allStations = liner.getStations(line)"
           label="路線"
           class="filter-input"
         />
-        <q-input
+        <q-select
+          :options="allStations"
           outlined
-          v-model="stationName"
-          label="駅"
+          v-model="stations"
+          multiple
+          label="路線"
           class="filter-input"
         />
         <q-select
@@ -40,11 +46,13 @@
           :options="floorOptions"
           label="所在階"
           class="filter-select"
+          filled
         />
         <q-btn
           label="検索"
           color="primary"
           class="filter-button"
+          @click="search"
           style="flex: 0 0 auto; background-color: #001858; color: #fef6e4"
         />
       </div>
@@ -59,35 +67,33 @@ import Liner from '../class/Liner'
 import Header from '../components/Header.vue'
 import { useStore } from '../store'
 
+let liner = null
+let itandibb = null
 const store = useStore()
 const allLines = ref([])
 const allStations = ref([])
 const priceMin = ref('')
 const priceMax = ref('')
-const lineName = ref('')
-const stationName = ref('')
+const line = ref('')
+const stations = ref([])
 const floorSelection = ref('')
 const floorOptions = [
   { label: '1階', value: '1' },
   { label: '2階以上', value: '2+' }
 ]
 const filteredLines = ref([])
-
-watch(lineName, (newValue) => {
-  console.log(newValue)
-  filteredLines.value = allLines.value.filter(line =>
-    line.includes(newValue)
-  )
-})
-
 onMounted(() => {
   init()
   filteredLines.value = allLines.value // Initialize filteredLines with all options
 })
 
+watch(line, newValue => {
+  console.log(`line changed to: ${newValue}`)
+})
+
 function init () {
-  const itandibb = new Itandibb()
-  const liner = new Liner()
+  itandibb = new Itandibb()
+  liner = new Liner()
   try {
     itandibb.init()
     store.setItandibbInstance(itandibb)
@@ -97,24 +103,31 @@ function init () {
   } catch (error) {
     console.error('Error initializing Itandibb in Main.vue:', error)
   }
-
-  function filterFnLines (val, update) {() => {
-      if (val === '') {
-        filteredLines.value = allLines.value
-        update(() => {
-          filteredLines.value = allLines.value
-        })
-
-        return;
-      } 
-    update(() => {
-        filteredLines.value = allLines.value.filter((line) =>
-          line.toLowerCase().includes(val.toLowerCase())
-        )
-      })
-    }
-  }
 }
+
+const filterFnLines = (val, update) => {
+  if (val === '') {
+    filteredLines.value = allLines.value
+    update(() => {
+      filteredLines.value = allLines.value
+    })
+    return
+  }
+  update(() => {
+    filteredLines.value = allLines.value.filter(line =>
+      line.toLowerCase().includes(val.toLowerCase())
+    )
+  })
+}
+
+const setline = val => {
+  line.value = val
+}
+
+const search = async () => {
+  const itandibbHouses = await itandibb.search(line.value,stations.value)
+}
+
 </script>
 
 <style scoped>
