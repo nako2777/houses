@@ -34,11 +34,10 @@ export default class Itandibb {
   }
 
 
-  async search(line,stations){
-    const stationsCode = this.getStationsCode(line,stations)
-    const conditions = {}
-    conditions.stationsCode = stationsCode
-    await this.getHouses(conditions)
+  async search(conditions){
+    conditions.stationsCode = this.getStationsCode(conditions.line,conditions.stations)
+    const data = await this.getHouses(conditions)
+    return data;
   }
 
   getStationsCode(line,stations){
@@ -75,8 +74,8 @@ export default class Itandibb {
         {
           filter: {
             "station_id:in": conditions.stationsCode,
-            // "rent:gteq": 60000,
-            // "rent:lteq": 100000,
+            ...(conditions.priceMin != "" && { "rent:gteq": parseInt(conditions.priceMin) }),
+            ...(conditions.priceMax != "" && { "rent:lteq": parseInt(conditions.priceMax) }),
           },
           sort: [{ last_status_opened_at: "desc" }],
           page: { page: 1, limit: 20 },

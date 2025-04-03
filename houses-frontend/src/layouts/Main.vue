@@ -56,6 +56,65 @@
           style="flex: 0 0 auto; background-color: #001858; color: #fef6e4"
         />
       </div>
+      <div class="results-container">
+        <div
+          v-for="property in itandibbHouses.buildings"
+          :key="property.property_id"
+          class="property-card"
+        >
+          <div class="property-header">
+            <img
+              :src="property.image?.url"
+              alt="Property Image"
+              class="property-image"
+            />
+            <div class="property-info">
+              <h3>{{ property.name }}</h3>
+              <p>{{ property.address_text }}</p>
+              <p>{{ property.nearby_train_station_texts.join(', ') }}</p>
+              <p>
+                {{ property.building_age_text }} / {{ property.story_text }}
+              </p>
+            </div>
+          </div>
+          <div class="rooms-container">
+            <q-card
+              v-for="room in property.rooms"
+              :key="room.room_property_id"
+              class="room-card"
+              flat
+              bordered
+              @mouseover="hover = true"
+              @mouseleave="hover = false"
+            >
+              <q-img
+                :src="room.madori_image?.url || 'default-room-image.jpg'"
+                alt="Room Layout"
+                class="room-image"
+                ratio="1"
+              />
+              <q-card-section class="room-info">
+                <q-item>
+                  <q-item-section>
+                    <div>
+                      部屋番号: {{ room.room_number }} | 賃料:
+                      {{ room.rent_text }} | 敷金: {{ room.shikikin_text }} /
+                      礼金: {{ room.reikin_text }} | 専有面積:
+                      {{ room.floor_area_text }} | 間取り:
+                      {{ room.layout_text }}
+                      <a
+                        :href="`https://itandibb.com/rent_rooms/${room.room_property_id}`"
+                        target="_blank"
+                        >查看详情</a
+                      >
+                    </div>
+                  </q-item-section>
+                </q-item>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -64,6 +123,7 @@
 import { ref, onMounted, watch } from 'vue'
 import Itandibb from '../class/Itandibb'
 import Liner from '../class/Liner'
+// @ts-ignore
 import Header from '../components/Header.vue'
 import { useStore } from '../store'
 
@@ -76,6 +136,7 @@ const priceMin = ref('')
 const priceMax = ref('')
 const line = ref('')
 const stations = ref([])
+let itandibbHouses = ref([])
 const floorSelection = ref('')
 const floorOptions = [
   { label: '1階', value: '1' },
@@ -125,9 +186,21 @@ const setline = val => {
 }
 
 const search = async () => {
-  const itandibbHouses = await itandibb.search(line.value,stations.value)
+  try {
+    const conditions = {
+      line: line.value,
+      stations: stations.value,
+      priceMin: priceMin.value,
+      priceMax: priceMax.value,
+      floorSelection: floorSelection.value
+    }
+    const response = await itandibb.search(conditions)
+    itandibbHouses.value = response // Store the fetched data
+    console.log('Fetched properties:', itandibbHouses.value)
+  } catch (error) {
+    console.error('Error fetching properties:', error)
+  }
 }
-
 </script>
 
 <style scoped>
@@ -211,5 +284,76 @@ const search = async () => {
   background-color: #f3e8d9; /* Lighter theme color on hover */
   color: #001858; /* Text color on hover */
   transform: translateY(-2px); /* Slight lift on hover */
+}
+
+/* Results container styles */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.property-card {
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fef6e4;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+}
+
+.property-header {
+  display: flex;
+  gap: 16px;
+}
+
+.property-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.property-info {
+  flex: 1;
+}
+
+.rooms-container {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.room-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+.room-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+}
+
+.room-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.room-info {
+  flex: 1;
+  font-size: 14px;
+  color: #001858;
+}
+
+.details-button {
+  margin-left: 8px;
+  font-size: 12px;
 }
 </style>

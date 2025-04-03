@@ -7,6 +7,7 @@
 
 <script setup>
 import { ref } from 'vue'
+// @ts-ignore
 import SettingsDialog from './SettingsDialog.vue'
 
 const settingsDialog = ref(null)
