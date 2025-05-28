@@ -157,8 +157,8 @@ function init () {
   liner = new Liner()
   try {
     itandibb.init()
+    
     store.setItandibbInstance(itandibb)
-    console.log('Itandibb instance stored in Pinia:', itandibb)
 
     allLines.value = liner.getLines()
   } catch (error) {
